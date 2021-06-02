@@ -10,15 +10,11 @@
 // BELOW ARE THE VARIABLES TO CHANGE BASED ON YOUR VIDEO
 let canvas_height = 1080;
 let canvas_width = 1920;
-let video_path = "/assets/test_video_footage.mp4";
+let video_path = "/assets/test.mp4";
 let options = {
-  imageScaleFactor: 0.3,
+  architecture: 'MobileNetV1',
   outputStride: 16,
-  flipHorizontal: false,
-  minConfidence: 0.5,
-  maxPoseDetections: 5,
-  scoreThreshold: 0.5,
-  nmsRadius: 20,
+  inputResolution: 500,
   detectionType: "single",
   multiplier: 0.75,
 };
@@ -47,7 +43,7 @@ function setup() {
          height: 480 pixels
   */
   createCanvas(canvas_width, canvas_height);
-
+  
   // get video and call function vidLoad when video gets loaded
   video = createVideo(video_path, vidLoad);
 
