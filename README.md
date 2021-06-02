@@ -10,9 +10,31 @@ Afterwards, you can set intervals of time while watching your video in real time
 
 ## JSON Output - Data Structure
 
+Entire dataset should be packaged and distributed as a .zip with 100 - 150 JSON files, each file with data for 100 basketball SHOTS.
+
+Here is what each JSON file should look like:
+
+```
+{
+    time: string,  // optional field
+    makes: number, // optional field
+    misses: number, // optional field
+    shots: [
+        SHOT #1,
+        SHOT #2,
+        .
+        .
+        .
+        SHOT #100
+    ]
+}
+```
+
 Since this tool is designed to collect keypoint data from PoseNet for basketball shooting, we have each SHOT object as:
 
-{
+### SINGLE BASKETBALL SHOT
+```
+{ 
     got_bucket: boolean // did the shot go in?
 
     form: [
@@ -24,11 +46,23 @@ Since this tool is designed to collect keypoint data from PoseNet for basketball
         POSE #N // end of basketball shot
     ]
 }
+```
 
 - Each POSE is composed of:
-
+```
 {
     keypoints ...
     joint locations ...
     confidence ...
 }
+```
+
+Data persistence approaches:
+
+- Local storage (5 MB max)
+- Write to file on disk (need to write custom express web server)
+
+## Best User Experience
+
+- cmd / ctrl + (-) to zoom out and view both the canvas and video controls in the same window. 
+
