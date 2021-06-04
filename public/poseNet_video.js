@@ -20,6 +20,15 @@ let options = {
 };
 // ======================================================
 
+let fileName = localStorage.getItem("file-name")
+
+let shotAngle = localStorage.getItem("shot-angle")
+
+if (fileName && shotAngle) {
+  document.getElementById("file-name").value = fileName
+  document.getElementById("shot-angle").value = shotAngle
+}
+
 // variable for our video file
 let video;
 // to store the ML model
@@ -43,7 +52,7 @@ function setup() {
          height: 480 pixels
   */
   createCanvas(canvas_width, canvas_height);
-  
+
   // get video and call function vidLoad when video gets loaded
   video = createVideo(video_path, vidLoad);
 
@@ -184,7 +193,7 @@ record_button.onclick = () => {
     record_button.className = "btn btn-success"
 
     // verify if the recording was good
-    if (!confirm("is the recording good?")) return; 
+    if (!confirm("is the recording good?")) return;
 
     let got_bucket = 0;
 
@@ -194,8 +203,33 @@ record_button.onclick = () => {
     }
 
     // API call to server to save data
+    let fileName = localStorage.getItem("file-name")
+    let shotAngle = localStorage.getItem("shot-angle")
 
-    downloadObjectAsJson(recordedPoses, "shot")
+    if (!fileName || !shotAngle) {
+      alert("no saved setting data found")
+      return
+    }
+
+    fetch("/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        form: recordedPoses,
+        got_bucket: got_bucket,
+        file_name: fileName,
+        shot_angle: shotAngle
+      })
+    }).then((response => response.json()))
+      .then(data => {
+        alert(data.message)
+      })
+      .catch((err) => {
+        console.log(err)
+        alert(err)
+      })
     recordedPoses = []
   } else {
     // started recording
@@ -207,10 +241,10 @@ record_button.onclick = () => {
 
 
 // deprecated function. used to save currently stored data as JSON
-function downloadObjectAsJson(exportObj, exportName){
+function downloadObjectAsJson(exportObj, exportName) {
   var dataStr = "data:text/json;charset=utf-8," + JSON.stringify(exportObj);
   var downloadAnchorNode = document.createElement('a');
-  downloadAnchorNode.setAttribute("href",     dataStr);
+  downloadAnchorNode.setAttribute("href", dataStr);
   downloadAnchorNode.setAttribute("download", exportName + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click();

@@ -8,7 +8,8 @@ let port = process.env.PORT || 6969;
 // serve static ml5 / p5 stuff for browser
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '10mb', extended: true}))
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 
 app.post("/save", (req, res) => {
   // write to file with data
@@ -18,7 +19,7 @@ app.post("/save", (req, res) => {
   if (!body) return res.status(400).json({ message: "data missing" });
   if (!body.form)
     return res.status(400).json({ message: "missing shooting form" });
-  if (!body.got_bucket)
+  if (body.got_bucket === undefined)
     return res
       .status(400)
       .json({ message: "missing data about if shot went in" });
@@ -29,23 +30,23 @@ app.post("/save", (req, res) => {
 
   let existingData = "";
   try {
-    existingData = fs.readFileSync("/out/" + body.file_name + ".json");
+    existingData = fs.readFileSync("./out/" + body.file_name + ".json");
   } catch (err) {
     // do nothing
   }
 
   if (existingData != "") {
     existingData = JSON.parse(existingData);
-    existingData.shots += [
+    existingData.shots = existingData.shots.concat([
       {
         got_bucket: body.got_bucket,
         form: body.form,
       },
-    ];
+    ]);
     existingData.makes += body.got_bucket;
     existingData.total_shots++;
     fs.writeFileSync(
-      body.file_name + ".json",
+      "./out/" + body.file_name + ".json",
       JSON.stringify(existingData),
       (err) => {
         console.log("error writing file.");
@@ -54,12 +55,12 @@ app.post("/save", (req, res) => {
     );
   } else {
     fs.writeFileSync(
-      body.file_name + ".json",
+      "./out/" + body.file_name + ".json",
       JSON.stringify({
         shot_angle: body.shot_angle,
         shots: [{ got_bucket: body.got_bucket, form: body.form }],
-        makes: 0,
-        total_shots: 0,
+        makes: body.got_bucket,
+        total_shots: 1,
       }),
       (err) => {
         console.log("error creating file.");
@@ -71,7 +72,7 @@ app.post("/save", (req, res) => {
   res.status(200).json({
     message:
       "save success! " +
-      existingData.total_shots +
+      (existingData.total_shots || 1) +
       " shots saved so far in " +
       body.file_name +
       ".json",

@@ -11,13 +11,27 @@
 </head>
 
 <body> 
+  <style>
+    .control-panel {
+      display: flex;
+      margin: 10px
+    }
+   </style> 
   <!-- Show a cute intro to the user -->
   <h1>Basketball Form Detection - LIKE AND SUBSCRIBE</h1>
-  <button id = "record-pose" class = "btn btn-success"> START RECORDING POSE </button>
+  <div class = "control-panel">
+    <button id = "record-pose" class = "btn btn-success"> START RECORDING POSE </button>
+    <p>Unique ID: </p>
+    <input id = "file-name"></input>
+    <p>Shot angle: </p>
+    <input id = "shot-angle"></input>
+    <button id = "save-settings" class = "btn btn-warning"> Save ID / Shot Angle </button>
+  </div>
   <!-- As loading takes time, show the below message. We will change this later when the model 
     will be ready to use using id name "status" to change the text inside.-->
   <p id='status'>Loading model and video...</p>
   <!-- put our poseNet code. We seperated this to another file for better readability.-->
+  <script src="util.js"></script>
   <script src="poseNet_video.js"></script>
 </body>
 </html>
