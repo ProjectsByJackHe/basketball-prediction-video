@@ -35,7 +35,7 @@ Since this tool is designed to collect keypoint data from PoseNet for basketball
 ### SINGLE BASKETBALL SHOT
 ```
 { 
-    got_bucket: boolean // did the shot go in?
+    got_bucket: Integer // 1 if the shot went in, 0 otherwise
 
     form: [
         POSE #1, // start of basketball shot 
